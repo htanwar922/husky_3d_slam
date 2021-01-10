@@ -5,6 +5,7 @@ ROS 3D mapping using kinect sensor on husky.
 - Ubuntu 16.04 (Xenial Xerus)
 - ROS Kinetic
 - Husky ROS packages
+- Octomap ROS packages
 
 For Husky packages, run
 <code>
