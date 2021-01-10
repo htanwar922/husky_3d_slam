@@ -1,0 +1,8 @@
+prefix=/home/himanshu/Study/catkin_ws/src/husky_3d_slam/build/devel
+
+Name: husky_3d_slam
+Description: Description of husky_3d_slam
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="multimaster" default="false"/>
+  <arg name="robot_namespace" default="/"/>
+
+  <arg name="x" default="0.0"/>
+  <arg name="y" default="0.0"/>
+  <arg name="z" default="0.0"/>
+  <arg name="yaw" default="0.0"/>
+
+  <arg name="kinect_enabled" default="$(optenv HUSKY_KINECT_ENABLED true)"/>
+  <arg name="urdf_extras" default="$(optenv HUSKY_URDF_EXTRAS)"/>
+
+  <group ns="$(arg robot_namespace)">
+
+    <group if="$(arg multimaster)">
+      <include file="$(find husky_3d_slam)/launch/spawn/description.launch" >
+        <arg name="robot_namespace" value="$(arg robot_namespace)"/>
+        <arg name="kinect_enabled" default="$(arg kinect_enabled)"/>
+        <arg name="urdf_extras" default="$(arg urdf_extras)"/>
+      </include>
+
+      <include file="$(find multimaster_launch)/launch/multimaster_gazebo_robot.launch">
+        <arg name="gazebo_interface" value="$(find husky_control)/config/gazebo_interface.yaml" />
+        <arg name="robot_namespace" value="$(arg robot_namespace)"/>
+      </include>
+
+      <!-- For multimaster bringup, need to load the controller config -->
+      <rosparam command="load" file="$(find husky_control)/config/control.yaml" />
+    </group>
+
+    <!-- For single master bringup, run robot control on the gazebo master -->
+    <!-- Note that husky_description/description.launch is already included in husky_control/control.launch. -->
+    <group unless="$(arg multimaster)">
+      <include file="$(find husky_3d_slam)/launch/spawn/control.launch">
+        <arg name="multimaster" value="$(arg multimaster)"/>
+        <arg name="kinect_enabled" default="$(arg kinect_enabled)"/>
+        <arg name="urdf_extras" value="$(arg urdf_extras)"/>
+      </include>
+    </group>
+
+    <!-- Additional nodes for specific accessories -->
+    <group if="$(arg kinect_enabled)">
+      <!-- Include poincloud_to_laserscan if simulated Kinect is attached -->
+      <!-- <include file="$(find husky_3d_slam)/launch/mapping/octomap_mapping.launch" /> -->
+    </group>
+
+    <!-- Spawn robot in gazebo -->
+    <node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model"
+        args="-x $(arg x)
+              -y $(arg y)
+              -z $(arg z)
+              -Y $(arg yaw)
+              -unpause
+              -urdf
+              -param robot_description
+              -model $(arg robot_namespace)" />
+
+  </group>
+
+</launch>

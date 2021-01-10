@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: husky_3d_slam
+Description: Description of husky_3d_slam
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

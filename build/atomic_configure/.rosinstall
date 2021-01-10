@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/himanshu/Study/catkin_ws/src/husky_3d_slam/build/devel/setup.sh

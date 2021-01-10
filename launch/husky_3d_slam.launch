@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<launch>
+	<arg name="world_name" default="worlds/willowgarage.world"/> <!-- world_name is wrt GAZEBO_RESOURCE_PATH environment variable. (default /usr/share/gazebo-7) -->
+	<arg name="rviz_cfg" default="husky_3d_slam.rviz" />
+	<arg name="map_file" default="map_3d.bt" />
+
+	<!-- Launch world in gazebo -->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="world_name" value="$(arg world_name)"/>
+		<arg name="paused" value="false"/>
+		<arg name="use_sim_time" value="true"/>
+		<arg name="gui" value="true"/>
+		<arg name="headless" value="false"/>
+		<arg name="debug" value="false"/>
+	</include>
+
+	<!-- Launch husky with kinect -->
+	<!-- <include file="$(find husky_base)/launch/base.launch" /> -->
+	<include file="$(find husky_3d_slam)/launch/spawn/spawn_husky_with_kinect.launch" />
+	
+	<!-- Start rviz visualization with preset config -->
+	<node name="rviz" pkg="rviz" type="rviz" args="$(eval '-d ' + find('husky_3d_slam') + '/rviz_cfg/' + arg('rviz_cfg'))" />
+
+	<!-- Start mapping with octomap_server -->
+	<include file="$(find husky_3d_slam)/launch/mapping/octomap_mapping.launch">
+		<arg name="base_frame" value="odom" />
+		<arg name="map_file" value="$(eval find('husky_3d_slam') + '/map/' + arg('map_file'))" />
+	</include>
+
+	<!-- Start teleop with keyboard -->
+	<include file="$(find husky_3d_slam)/launch/teleop.launch" />
+
+</launch>

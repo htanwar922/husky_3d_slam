@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<robot name="husky" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<xacro:property name="M_PI" value="3.14159"/>
+
+	<xacro:arg name="kinect_enabled" default="$(arg kinect_enabled)" />
+	<xacro:arg name="kinect_xyz" default="$(optenv HUSKY_KINECT_XYZ 0 0 0.02)" /> <!-- meters -->
+	<xacro:arg name="kinect_rpy" default="$(optenv HUSKY_KINECT_RPY 0 0 ${M_PI})" />  <!-- 0 0.18 3.14 radians -->
+
+	<xacro:arg name="robot_namespace" default="/" />
+	<xacro:arg name="urdf_extras" default="empty.urdf" />
+
+	<!-- Included URDF/XACRO Files -->
+	<xacro:include filename="$(find husky_description)/urdf/decorations.urdf.xacro" />
+	<xacro:include filename="$(find husky_description)/urdf/wheel.urdf.xacro" />
+
+	<xacro:include filename="$(find husky_3d_slam)/description/urdf/accessories/kinect_camera.urdf.xacro"/>
+	<xacro:include filename="$(find husky_description)/urdf/accessories/sick_lms1xx_mount.urdf.xacro"/>
+	<xacro:include filename="$(find husky_description)/urdf/accessories/sensor_arch.urdf.xacro"/>
+	
+	<!-- Included URDF Files -->
+	<xacro:include filename="$(find husky_3d_slam)/description/urdf/husky_base.urdf.xacro" />
+
+	<!-- Instantiate husky_base_macro once (has no parameters atm) -->
+	<xacro:husky_base_macro/>
+
+	<!-- Kinect on topbar -->
+	<xacro:if value="$(arg kinect_enabled)">
+		<xacro:kinect_camera name="camera" parent="$(arg camera_mountpoint)"> <!-- parent="kinect_mountpoint" robot_namespace="$(arg robot_namespace)" -->
+			<origin xyz="$(arg kinect_xyz)" rpy="$(arg kinect_rpy)"/> <!-- "0.05 0.0 -0.06" "0 0 0" -->
+		</xacro:kinect_camera>
+	</xacro:if>
+    
+</robot>
